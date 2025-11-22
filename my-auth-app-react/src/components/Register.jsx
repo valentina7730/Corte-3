@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
+
 const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 
-export const Register = () => {
+export const Register = ({ onBack }) => {
 	const [form, setForm] = useState({
 		username: "",
 		email: "",
@@ -12,11 +13,13 @@ export const Register = () => {
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState(null);
 
+
+    // Simula una carga inicial al montar el componente
    useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
         setLoading(false);
-    }, 1000);
+    }, 1500);
 
     return () => clearTimeout(timer);
 }, []); 
@@ -86,10 +89,15 @@ export const Register = () => {
 
 	return (
 
-
 		<div className=" flex items-center justify-center h-screen bg-gray-100">
 
-			<div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+			<div className="w-full max-w-md bg-white rounded-lg  shadow-xl shadow-gray-400 p-6">
+                <button
+            onClick={onBack}
+            className="mb-3 text-blue-600 hover:underline text-sm"
+          >
+            ← Volver
+          </button>
 				<h2 className="text-2xl font-semibold mb-4">Crear cuenta</h2>
 
 				{message && (
