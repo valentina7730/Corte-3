@@ -26,13 +26,15 @@ const Login = ({ onBack }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
     try {
-      // Aquí iria tu endpoint real
+      // peticion al servidor
       await new Promise((res) => setTimeout(res, 1000));
 
       setMessage({ type: "success", text: "Inicio de sesión exitoso" });
