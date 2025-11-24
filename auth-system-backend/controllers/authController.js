@@ -2,11 +2,14 @@ const { generateToken } = require("../shared/utils/jwt");
 const User = require("../shared/models/User");
 const bcrypt = require("bcryptjs");
 
+/**
+ * POST /auth/register
+ */
 const register = async (req, res) => {
   try {
     const { username, email, password, documentNumber } = req.body;
 
-    // Verificar si el usuario ya existe
+    // 1. Verificar si el usuario ya existe por email
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
@@ -16,22 +19,29 @@ const register = async (req, res) => {
       });
     }
 
-    // Encriptar contraseña usando bcryptjs
+    // 2. Encriptar contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crear nuevo usuario en la base de datos
+    // 3. Normalizar documentNumber: si viene vacío, lo dejamos como null
+    const sanitizedDocumentNumber =
+      documentNumber && documentNumber.trim() !== ""
+        ? documentNumber.trim()
+        : null;
+
+    // 4. Crear nuevo usuario en la base de datos
     const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
-      documentNumber,
+      documentNumber: sanitizedDocumentNumber,
       isActive: true,
     });
 
-    // Generar JWT
+    // 5. Generar JWT
     const token = generateToken({ userId: newUser.id, version: "v1" });
 
-    res.status(201).json({
+    // 6. Respuesta exitosa (el front usa data.token)
+    return res.status(201).json({
       message: "Usuario registrado exitosamente",
       timestamp: new Date().toISOString(),
       status: "success",
@@ -44,15 +54,33 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error("Error en registro:", error);
-    res.status(500).json({
+
+    // Manejo especial para errores de UNIQUE en documentNumber o email
+    if (error.name === "SequelizeUniqueConstraintError") {
+      let campo = "campo único";
+      if (error.fields?.email) campo = "email";
+      if (error.fields?.documentNumber) campo = "documento";
+
+      return res.status(400).json({
+        message: `El ${campo} ya está registrado`,
+        timestamp: new Date().toISOString(),
+        status: "error",
+      });
+    }
+
+    // Error genérico
+    return res.status(500).json({
       message: "Error interno del servidor",
       timestamp: new Date().toISOString(),
       status: "error",
-      error: error,
+      error: error.message || String(error),
     });
   }
 };
 
+/**
+ * POST /auth/login
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -68,17 +96,22 @@ const login = async (req, res) => {
       });
     }
 
-    const tokenJWT = generateToken({ userId: user.id, version: "v1" });
+    const token = generateToken({ userId: user.id, version: "v1" });
 
-    res.json({
+    return res.json({
       status: "success",
       message: "Login exitoso",
       timestamp: new Date().toISOString(),
-      tokenJWT,
+      token, // 👈 mismo nombre que en register
       user: { id: user.id, email: user.email, username: user.username },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error interno", status: "error" });
+    console.error("Error en login:", error);
+    return res.status(500).json({
+      message: "Error interno del servidor",
+      status: "error",
+      error: error.message || String(error),
+    });
   }
 };
 

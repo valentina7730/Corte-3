@@ -27,7 +27,8 @@ app.get('/', (req, res) => {
 });
 
 // Login
-app.use('/api/v1', require('./routes/auth'));
+app.use('/', require('./routes/auth'));
+
 
 // Inicializar servidor
 const startServer = async () => {
