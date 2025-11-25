@@ -9,7 +9,7 @@ const register = async (req, res) => {
   try {
     const { username, email, password, documentNumber } = req.body;
 
-    // 1. Verificar si el usuario ya existe por email
+    
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
@@ -19,16 +19,16 @@ const register = async (req, res) => {
       });
     }
 
-    // 2. Encriptar contraseña
+   
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3. Normalizar documentNumber: si viene vacío, lo dejamos como null
+    
     const sanitizedDocumentNumber =
       documentNumber && documentNumber.trim() !== ""
         ? documentNumber.trim()
         : null;
 
-    // 4. Crear nuevo usuario en la base de datos
+    
     const newUser = await User.create({
       username,
       email,
@@ -40,7 +40,7 @@ const register = async (req, res) => {
     // 5. Generar JWT
     const token = generateToken({ userId: newUser.id, version: "v1" });
 
-    // 6. Respuesta exitosa (el front usa data.token)
+    
     return res.status(201).json({
       message: "Usuario registrado exitosamente",
       timestamp: new Date().toISOString(),
@@ -102,7 +102,7 @@ const login = async (req, res) => {
       status: "success",
       message: "Login exitoso",
       timestamp: new Date().toISOString(),
-      token, // 👈 mismo nombre que en register
+      token, 
       user: { id: user.id, email: user.email, username: user.username },
     });
   } catch (error) {

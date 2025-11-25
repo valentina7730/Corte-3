@@ -1,17 +1,15 @@
-// ...existing code...
+
 import React, { useState, useEffect } from "react";
 
 const getRuntimeEnv = () => {
-  // prefer Vite's import.meta.env, fallback to globalThis.process.env (Node/CRA) or empty object
-  // access import.meta.env via a runtime-evaluated function to avoid parse errors in environments that
-  // do not support the 'import.meta' syntax.
+ 
   try {
     const env = new Function('try { return import.meta.env } catch (e) { return undefined }')();
     if (env) {
       return env;
     }
   } catch {
-    // ignore environments that don't support import.meta
+    // ignore 
   }
   if (typeof globalThis !== "undefined" && globalThis.process && globalThis.process.env) {
     return globalThis.process.env;
@@ -68,7 +66,7 @@ const Login = ({ onBack = () => {} }) => {
       if (data && data.token) {
         // muestra exactamente el mensaje solicitado
         setMessage(`Usuario logueado, el token generado es ${data.token}`);
-        // opcional: guardar token
+       
         localStorage.setItem("token", data.token);
         if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
       } else {

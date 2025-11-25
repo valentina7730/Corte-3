@@ -12,7 +12,7 @@ const Register = ({ onBack = () => {} }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  // Carga inicial "fake" al montar el componente (opcional)
+  
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => setLoading(false), 500);
@@ -38,7 +38,7 @@ const Register = ({ onBack = () => {} }) => {
         body: JSON.stringify(form),
       });
 
-      // Intentamos leer el body como JSON, pero sin reventar si viene HTML (404, etc.)
+      
       let data = null;
       try {
         data = await res.json();
@@ -57,7 +57,7 @@ const Register = ({ onBack = () => {} }) => {
         return;
       }
 
-      // Intentar leer el token con los nombres posibles
+      
       const token = data?.token || data?.tokenJWT;
 
       if (!token) {
@@ -67,7 +67,7 @@ const Register = ({ onBack = () => {} }) => {
         return;
       }
 
-      // Guardar token opcionalmente
+      
       try {
         localStorage.setItem("token", token);
         if (data.user) {
@@ -77,7 +77,7 @@ const Register = ({ onBack = () => {} }) => {
         // Si localStorage falla, no rompemos el flujo
       }
 
-      // Mensaje EXACTO que pide el enunciado
+      
       setMessage(
         `Usuario registrado correctamente, el token generado es ${token}`
       );

@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const syncModels = async () => {
   try {
-    await sequelize.sync({ alter: true }); // alter: true modifica la tabla si es necesario
+    await sequelize.sync({ alter: true }); 
     console.log('Modelos sincronizados con la base de datos');
   } catch (error) {
     console.error('Error al sincronizar modelos:', error);
